@@ -4,10 +4,14 @@
 
 // ここにGoogleフォームのURLを入れてください。
 // 例: const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/xxxx/viewform";
-const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScIoMHG4QjlH-FNP4nwSwZ4it9GhtRs_vEeAjqReaXFnTk3RQ/viewform?usp=publish-editor";
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScIoMHG4QjlH-FNP4nwSwZ4it9GhtRs_vEeAjqReaXFnTk3RQ/viewform";
+const AREA_ENTRY_ID = "entry.1015631497"; // 配布エリアのentry IDに差し替え
 
-// QRコードやエリア別に計測したい場合は、URLに ?area=A のように付けてください。
-// 例: https://example.github.io/story-letter-lp/?area=A
+// ===============================
+// Area Parameter
+// ===============================
+
+// LPのURL末尾 ?area=A / ?area=B / ?area=C を読み取る
 const params = new URLSearchParams(window.location.search);
 const area = params.get("area");
 
@@ -16,15 +20,16 @@ const area = params.get("area");
 // ===============================
 
 function buildFormUrl() {
+  // area がない場合は、普通のGoogleフォームURLへ
   if (!area) return GOOGLE_FORM_URL;
 
-  // Googleフォーム側に「配布エリア」などの質問を作り、事前入力URLを使う場合は、
-  // ここを entry.xxxxx= の形式に変更すると、エリア情報を自動入力できます。
-  // まずは簡易計測として、URL末尾に area パラメータを付けています。
+  // Googleフォームの事前入力URLを作る
   const separator = GOOGLE_FORM_URL.includes("?") ? "&" : "?";
-  return `${GOOGLE_FORM_URL}${separator}area=${encodeURIComponent(area)}`;
+
+  return `${GOOGLE_FORM_URL}${separator}usp=pp_url&${AREA_ENTRY_ID}=${encodeURIComponent(area)}`;
 }
 
+// LP内のフォームボタンにURLを設定
 document.querySelectorAll(".js-form-link").forEach((link) => {
   link.href = buildFormUrl();
 });
